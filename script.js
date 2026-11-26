@@ -1,13 +1,13 @@
 // ============ Данные ============
 const COLORS = [
-    { id: 'blue',   hex: '#1E3F8C', name: 'Тёмно-синий' },
-    { id: 'green',  hex: '#2E7D4F', name: 'Зелёный' },
-    { id: 'red',    hex: '#E32219', name: 'Красный' },
-    { id: 'yellow', hex: '#F2C200', name: 'Жёлтый' },
-    { id: 'violet', hex: '#6B2C91', name: 'Фиолетовый' },
-    { id: 'brown',  hex: '#6B4226', name: 'Коричневый' },
-    { id: 'black',  hex: '#1A1A1A', name: 'Чёрный' },
-    { id: 'gray',   hex: '#8C8C8C', name: 'Серый' },
+    { id: 'blue',   hex: '#1E3A6D', name: 'Темно-синий', type: 'main', num: 1 },
+    { id: 'green',  hex: '#2E6B42', name: 'Сине-зеленый', type: 'main', num: 2 },
+    { id: 'red',    hex: '#E32636', name: 'Оранжево-красный', type: 'main', num: 3 },
+    { id: 'yellow', hex: '#F2C200', name: 'Светло-желтый', type: 'main', num: 4 },
+    { id: 'violet', hex: '#6B2C91', name: 'Фиолетовый', type: 'additional', num: 5 },
+    { id: 'brown',  hex: '#6B4226', name: 'Коричневый', type: 'additional', num: 6 },
+    { id: 'black',  hex: '#1A1A1A', name: 'Черный', type: 'additional', num: 7 },
+    { id: 'gray',   hex: '#8C8C8C', name: 'Серый', type: 'additional', num: 0 } // В методичке серый обозначается 0
 ];
 
 const COLOR_MAP = Object.fromEntries(COLORS.map(c => [c.id, c]));
@@ -135,6 +135,15 @@ function startRound() {
     render();
 }
 
+function getFunctionalGroups(order) {
+    return {
+        '++': [order[0], order[1]], // Явное предпочтение
+        'xx': [order[2], order[3]], // Относительное предпочтение
+        '==': [order[4], order[5]], // Безразличие
+        '--': [order[6], order[7]]  // Антипатия / отвержение
+    };
+}
+
 function render() {
     roundInfo.textContent = `Раунд ${currentRound + 1} из 2`;
     const totalSelections = currentRound * 8 + currentOrder.length;
@@ -198,74 +207,148 @@ function selectColor(id) {
 function buildResult(rounds) {
     const main = rounds[0];
     const second = rounds[1];
+    const groups = getFunctionalGroups(main);
 
-    // Интерпретации по позициям первой половины (предпочтения)
-    const preferred = [];
-    for (let i = 0; i < 4; i++) {
-        const pair = pairKey(main[i * 2], main[i * 2 + 1]);
-        preferred.push({
-            pair: [main[i * 2], main[i * 2 + 1]],
-            text: PAIRS[pair] || 'Нейтральное сочетание.',
-        });
-    }
+    // Анализ позиций
+    const positions = main.map((id, index) => {
+        const color = COLOR_MAP[id];
+        const pairId = index < 4 
+            ? [COLOR_MAP[main[index * 2]].num, COLOR_MAP[main[index * 2 + 1]].num].sort((a,b)=>a-b).join('+')
+            : null;
+        
+        return {
+            position: index + 1,
+            color: color,
+            meaning: POSITION_MEANINGS[index],
+            pairText: pairId ? (PAIR_INTERPRETATIONS[pairId] || 'Нейтральное сочетание.') : null,
+            isMainColor: color.type === 'main'
+        };
+    });
 
-    // Отвергаемые (вторая половина)
-    const rejected = main.slice(4).map(id => ({
-        color: id,
-        text: REJECTED[id],
-    }));
+    // Проверка на конфликт (основные цвета за пределами 5-й позиции)
+    const mainColorsInRejection = main.slice(5).filter(id => COLOR_MAP[id].type === 'main');
+    const conflictText = mainColorsInRejection.length > 0
+        ? `Внимание: основные цвета (${mainColorsInRejection.map(id => COLOR_MAP[id].name).join(', ')}) находятся в зоне отвержения. Это может указывать на неудовлетворенность базовых потребностей и внутренний конфликт[reference:3].`
+        : 'Основные потребности в целом удовлетворены.';
 
-    // Устойчивость
+    // Устойчивость (совпадение двух проходов)
     const matches = main.reduce((acc, id, i) => acc + (second[i] === id ? 1 : 0), 0);
 
     return {
         date: new Date().toISOString(),
         mainOrder: main,
-        preferred,
-        rejected,
-        matches,
+        groups: groups,
+        positions: positions,
+        conflictText: conflictText,
+        matches: matches
     };
 }
 
 function renderResult(result) {
     resultContent.innerHTML = '';
 
-    // --- Блок "предпочтения" (пары) ---
-    const prefTitle = document.createElement('h2');
-    prefTitle.textContent = 'Предпочтения';
-    prefTitle.style.cssText = 'font-size:18px;margin-bottom:12px;color:var(--text);';
-    resultContent.appendChild(prefTitle);
+    // 1. Блок предупреждения (если есть конфликт)
+    if (result.conflictText) {
+        const warning = document.createElement('div');
+        warning.className = 'result-summary';
+        warning.style.borderLeft = '4px solid var(--primary)';
+        warning.textContent = result.conflictText;
+        resultContent.appendChild(warning);
+    }
 
-    result.preferred.forEach((item, idx) => {
+    // 2. Блок функциональных групп
+    const groupsTitle = document.createElement('h2');
+    groupsTitle.textContent = 'Функциональные группы';
+    groupsTitle.style.cssText = 'font-size:18px;margin:24px 0 12px;';
+    resultContent.appendChild(groupsTitle);
+
+    const groupsContainer = document.createElement('div');
+    groupsContainer.className = 'groups-container';
+    groupsContainer.style.cssText = 'display:flex; flex-direction:column; gap:8px; margin-bottom:24px;';
+
+    const groupLabels = {
+        '++': 'Явное предпочтение',
+        'xx': 'Относительное предпочтение',
+        '==': 'Безразличие',
+        '--': 'Антипатия / отвержение'
+    };
+
+    Object.entries(result.groups).forEach(([key, colorIds]) => {
+        const groupEl = document.createElement('div');
+        groupEl.style.cssText = 'display:flex; align-items:center; gap:12px; padding:8px; background:var(--bg); border-radius:8px;';
+        
+        const label = document.createElement('span');
+        label.style.cssText = 'font-weight:bold; width:60px; font-size:14px;';
+        label.textContent = key;
+
+        const desc = document.createElement('span');
+        desc.style.cssText = 'font-size:12px; color:var(--text-muted); width:120px;';
+        desc.textContent = groupLabels[key];
+
+        const swatches = document.createElement('div');
+        swatches.style.cssText = 'display:flex; gap:6px;';
+        colorIds.forEach(id => {
+            const sw = document.createElement('div');
+            sw.style.cssText = `width:24px; height:24px; border-radius:4px; background:${COLOR_MAP[id].hex}; border:1px solid var(--border);`;
+            swatches.appendChild(sw);
+        });
+
+        groupEl.appendChild(label);
+        groupEl.appendChild(desc);
+        groupEl.appendChild(swatches);
+        groupsContainer.appendChild(groupEl);
+    });
+    resultContent.appendChild(groupsContainer);
+
+    // 3. Детальный разбор позиций
+    const positionsTitle = document.createElement('h2');
+    positionsTitle.textContent = 'Разбор позиций и пар';
+    positionsTitle.style.cssText = 'font-size:18px;margin:24px 0 12px;';
+    resultContent.appendChild(positionsTitle);
+
+    result.positions.forEach(pos => {
         const itemEl = document.createElement('div');
         itemEl.className = 'result-item';
 
-        // Свотчи пары
-        const swatchWrap = document.createElement('div');
-        swatchWrap.style.cssText = 'display:flex;flex-direction:column;gap:4px;flex-shrink:0;';
-
-        item.pair.forEach(id => {
-            const sw = document.createElement('div');
-            sw.className = 'result-swatch';
-            sw.style.background = COLOR_MAP[id].hex;
-            swatchWrap.appendChild(sw);
-        });
+        const sw = document.createElement('div');
+        sw.className = 'result-swatch';
+        sw.style.background = pos.color.hex;
 
         const text = document.createElement('div');
         const name = document.createElement('div');
         name.className = 'result-name';
-        name.textContent = `Позиция ${idx * 2 + 1}–${idx * 2 + 2}: ${COLOR_MAP[item.pair[0]].name} + ${COLOR_MAP[item.pair[1]].name}`;
+        name.textContent = `${pos.position}. ${pos.color.name}`;
 
-        const desc = document.createElement('div');
-        desc.className = 'result-desc';
-        desc.textContent = item.text;
+        const meaning = document.createElement('div');
+        meaning.className = 'result-desc';
+        meaning.style.fontWeight = '500';
+        meaning.textContent = pos.meaning;
+        meaning.style.color = 'var(--text)';
+
+        const pairDesc = document.createElement('div');
+        pairDesc.className = 'result-desc';
+        pairDesc.textContent = pos.pairText ? `В паре: ${pos.pairText}` : '';
 
         text.appendChild(name);
-        text.appendChild(desc);
-        itemEl.appendChild(swatchWrap);
+        text.appendChild(meaning);
+        if (pos.pairText) text.appendChild(pairDesc);
+
+        itemEl.appendChild(sw);
         itemEl.appendChild(text);
         resultContent.appendChild(itemEl);
     });
+
+    // 4. Устойчивость
+    const stability = document.createElement('div');
+    stability.className = 'result-summary';
+    const stabilityText = result.matches >= 6
+        ? 'Высокая устойчивость предпочтений.'
+        : result.matches >= 3
+            ? 'Умеренная устойчивость.'
+            : 'Выбор был спонтанным — возможно, вы в состоянии перемен.';
+    stability.innerHTML = `<strong>Совпадение двух проходов:</strong> ${result.matches} из 8. ${stabilityText}`;
+    resultContent.appendChild(stability);
+}
 
     // --- Блок "отвергаемые" ---
     const rejTitle = document.createElement('h2');
@@ -297,6 +380,41 @@ function renderResult(result) {
         resultContent.appendChild(itemEl);
     });
 
+    const POSITION_MEANINGS = [
+    'Средство достижения цели (как вы действуете)',
+    'Цель, к которой вы стремитесь',
+    'Истинная ситуация (ваше реальное состояние)',
+    'Образ действий, который подсказывает ситуация',
+    'Безразличие / нейтральное отношение',
+    'Безразличие / резервная трактовка',
+    'Негативное отношение / источник стресса',
+    'Стремление подавить потребность'
+];
+    
+const PAIR_INTERPRETATIONS = {
+    // +++ Группа (явное предпочтение)
+    '1+2': 'Чувство удовлетворенности, спокойствия, стремление к спокойной обстановке, нежелание участвовать в конфликтах.',
+    '1+3': 'Гармоничный баланс между потребностью в покое и активной деятельностью.',
+    '1+4': 'Стремление к зависимости от среды, потребность в поддержке и понимании.',
+    '2+3': 'Автономность, самостоятельность в принятии решений, инициативность.',
+    '2+4': 'Стремление к самоутверждению через активную деятельность и достижение целей.',
+    '3+4': 'Направленность вовне, потребность активно действовать и добиваться успеха.',
+    
+    // Сочетания с дополнительными цветами
+    '1+5': 'Тонкая эмоциональность, романтичность, потребность в глубоких привязанностях.',
+    '1+0': 'Потребность в уединении и тишине, возможна усталость от общения.',
+    '2+7': 'Стремление к самоутверждению через независимость и контроль.',
+    '3+7': 'Сильная энергия, возможно, протестное поведение, готовность отстаивать позицию.',
+    '4+5': 'Мечтательность с оптимизмом, потребность в признании и переменах.',
+    '4+0': 'Стремление к оптимизму на фоне усталости, возможна скрытая тревога.',
+    
+    // Сочетания дополнительных цветов
+    '5+6': 'Потребность в утонченном комфорте и эстетике, тонкая чувствительность.',
+    '6+7': 'Стремление к комфорту и независимости одновременно.',
+    '0+7': 'Ярко выраженная потребность в уединении или протест, желание отгородиться.'
+};
+
+    
     // --- Итоговая сводка ---
     const summary = document.createElement('div');
     summary.className = 'result-summary';

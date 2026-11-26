@@ -149,7 +149,7 @@ function render() {
     }
 
     colorsGrid.innerHTML = '';
-    remaining.forEach(id => {
+    colorPool.forEach(id => {
         const color = COLOR_MAP[id];
         const tile = document.createElement('div');
         tile.className = 'color-tile';
@@ -159,18 +159,15 @@ function render() {
 
         const order = currentOrder.indexOf(id);
         if (order !== -1) {
-            tile.classList.add('selected');
-            const badge = document.createElement('span');
-            badge.className = 'order-badge';
-            badge.textContent = order + 1;
-            tile.appendChild(badge);
+            // Цвет выбран — исчезает, но место занимает
+            tile.classList.add('faded');
+            tile.style.pointerEvents = 'none';
         } else {
             tile.addEventListener('click', () => selectColor(id));
         }
-
         colorsGrid.appendChild(tile);
     });
-
+    
     selectionPreview.innerHTML = '';
     currentOrder.forEach(id => {
         const dot = document.createElement('div');

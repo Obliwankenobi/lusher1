@@ -183,11 +183,10 @@ function render() {
 function selectColor(id) {
     if (currentOrder.includes(id)) return;
 
-    // Haptic feedback на поддерживающих устройствах
     if (navigator.vibrate) navigator.vibrate(10);
 
     currentOrder.push(id);
-       remaining = remaining.filter(cid => cid !== id);   // ← НОВАЯ СТРОКА
+    remaining = remaining.filter(cid => cid !== id);   // ← НОВАЯ СТРОКА
 
     if (currentOrder.length === 8) {
         roundsResults.push([...currentOrder]);
@@ -207,7 +206,6 @@ function selectColor(id) {
         render();
     }
 }
-
 // ============ Построение результата ============
 function buildResult(rounds) {
     const main = rounds[0];

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +7,12 @@
     <meta name="theme-color" content="#f5f5f7">
     <title>Тест Люшера</title>
     <link rel="stylesheet" href="style.css">
+    <!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Тест Люшера">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 </head>
 <body>
     <div class="container">
@@ -34,13 +41,14 @@
 
         <!-- Экран результатов -->
         <div id="result-screen" class="screen">
-            <h1>Результат</h1>
-            <div id="result-content"></div>
-            <div class="btn-group">
-                <button id="restart-btn" class="btn btn-primary">Пройти заново</button>
-                <button id="to-history-btn" class="btn btn-secondary">История</button>
-            </div>
-        </div>
+    <h1>Результат</h1>
+    <div id="result-content"></div>
+    <div class="btn-group">
+        <button id="pdf-btn" class="btn btn-primary">Скачать PDF</button>
+        <button id="restart-btn" class="btn btn-secondary">Пройти заново</button>
+        <button id="to-history-btn" class="btn btn-secondary">История</button>
+    </div>
+</div>
 
         <!-- Экран истории -->
         <div id="history-screen" class="screen">

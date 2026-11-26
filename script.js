@@ -431,3 +431,18 @@ if (window.matchMedia) {
     updateTheme();
     mq.addEventListener('change', updateTheme);
 }
+// ============ Экспорт в PDF ============
+document.getElementById('pdf-btn').addEventListener('click', () => {
+    // Подставляем дату в заголовок (используется в CSS через ::after)
+    const now = new Date().toLocaleString('ru-RU', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+    });
+    document.getElementById('result-screen').querySelector('h1')
+        .setAttribute('data-print-date', `Дата прохождения: ${now}`);
+
+    // Небольшая задержка — даём браузеру применить стили
+    setTimeout(() => {
+        window.print();
+    }, 100);
+});

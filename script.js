@@ -156,18 +156,7 @@ function render() {
         tile.style.background = color.hex;
         tile.setAttribute('role', 'button');
         tile.setAttribute('aria-label', color.name);
-
-        const order = currentOrder.indexOf(id);
-        if (order !== -1) {
-            tile.classList.add('selected');
-            const badge = document.createElement('span');
-            badge.className = 'order-badge';
-            badge.textContent = order + 1;
-            tile.appendChild(badge);
-        } else {
-            tile.addEventListener('click', () => selectColor(id));
-        }
-
+        tile.addEventListener('click', () => selectColor(id));
         colorsGrid.appendChild(tile);
     });
 
@@ -179,7 +168,6 @@ function render() {
         selectionPreview.appendChild(dot);
     });
 }
-
 function selectColor(id) {
     if (currentOrder.includes(id)) return;
 

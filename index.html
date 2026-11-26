@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f5f5f7">
+    <title>Тест Люшера</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Экран приветствия -->
+        <div id="intro-screen" class="screen active">
+            <h1>Цветовой тест Люшера</h1>
+            <p>Выберите цвета в порядке предпочтения: от самого приятного к наименее приятному.</p>
+            <p class="hint">Не задумывайтесь долго — выбирайте интуитивно.</p>
+            <div class="btn-group">
+                <button id="start-btn" class="btn btn-primary">Начать тест</button>
+                <button id="history-btn" class="btn btn-secondary">История</button>
+            </div>
+            <p class="disclaimer">Тест носит ознакомительный характер и не заменяет консультацию психолога.</p>
+        </div>
+
+        <!-- Экран теста -->
+        <div id="test-screen" class="screen">
+            <div class="progress">
+                <span id="round-info">Раунд 1 из 2</span>
+                <div class="progress-bar"><div id="progress-fill"></div></div>
+            </div>
+            <p class="instruction" id="instruction">Выберите самый приятный цвет</p>
+            <div class="colors-grid" id="colors-grid"></div>
+            <div class="selection-preview" id="selection-preview"></div>
+        </div>
+
+        <!-- Экран результатов -->
+        <div id="result-screen" class="screen">
+            <h1>Результат</h1>
+            <div id="result-content"></div>
+            <div class="btn-group">
+                <button id="restart-btn" class="btn btn-primary">Пройти заново</button>
+                <button id="to-history-btn" class="btn btn-secondary">История</button>
+            </div>
+        </div>
+
+        <!-- Экран истории -->
+        <div id="history-screen" class="screen">
+            <h1>История прохождений</h1>
+            <div id="history-content"></div>
+            <div class="btn-group">
+                <button id="back-btn" class="btn btn-primary">На главную</button>
+                <button id="clear-history-btn" class="btn btn-danger">Очистить историю</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

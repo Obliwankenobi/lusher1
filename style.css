@@ -171,13 +171,18 @@ p {
     border-radius: 12px;
     cursor: pointer;
     border: 3px solid transparent;
-    transition: transform 0.15s, border-color 0.15s, opacity 0.2s;
+    transition: transform 0.15s, opacity 0.3s, visibility 0.3s;
     position: relative;
     touch-action: manipulation;
     user-select: none;
     -webkit-user-select: none;
 }
 
+.color-tile.faded {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.6);
+    pointer-events: none;
 @media (hover: hover) {
     .color-tile:hover:not(.selected) { transform: scale(1.05); }
 }

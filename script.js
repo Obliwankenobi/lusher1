@@ -23,7 +23,17 @@ const POSITION_DESCRIPTIONS = [
     'Стремление подавить потребность'
 ];
 
-// Полная таблица интерпретаций всех 28 пар цветов
+const COLOR_PSYCHOLOGY = {
+    'blue':   'потребность в спокойствии, эмоциональной стабильности и глубокой привязанности',
+    'green':  'потребность в самоутверждении, независимости и волевом контроле',
+    'red':    'потребность в активном действии, достижении успеха и эмоциональной разрядке',
+    'yellow': 'потребность в переменах, надежде на лучшее и общении',
+    'violet': 'потребность в одобрении, творческом самовыражении и идеализме',
+    'brown':  'потребность в физическом комфорте, безопасности и снятии напряжения',
+    'black':  'потребность в независимости, протесте или отказе от давления извне',
+    'gray':   'потребность в уединении, нейтралитете и отдыхе от обязательств'
+};
+
 const FULL_PAIR_TABLE = {
     '1+2': 'Чувство удовлетворенности, спокойствия, стремление к спокойной обстановке, нежелание участвовать в конфликтах.',
     '1+3': 'Гармоничный баланс между потребностью в покое и активной деятельностью.',
@@ -115,6 +125,33 @@ function getFunctionalGroups(order) {
         '==': [order[4], order[5]],
         '--': [order[6], order[7]]
     };
+}
+
+function getDetailedPositionText(index, colorId) {
+    const color = COLOR_MAP[colorId];
+    const cName = color.name.toLowerCase();
+    const psych = COLOR_PSYCHOLOGY[colorId];
+    const isMain = color.type === 'main';
+
+    if (index === 0) {
+        return `Средство достижения цели. Для реализации задуманного вы используете ${cName} цвет. Это значит, что в основе вашего способа действий лежит ${psych}. Вы подсознательно стремитесь действовать именно так, чтобы чувствовать себя уверенно.`;
+    }
+    if (index === 1) {
+        return `Цель, к которой вы стремитесь. В данный момент вы хотите достичь состояния, которое ассоциируется у вас с ${cName} цветом. Ваша главная мотивация — удовлетворить ${psych}. Это то, чего вам не хватает для полного ощущения гармонии.`;
+    }
+    if (index === 2 || index === 3) {
+        return `Истинная ситуация и реальное состояние. Сложившиеся обстоятельства или ваше текущее положение дел характеризуются ${cName} цветом. Вы ощущаете в этой ситуации ${psych}. Это отражает то, как вы на самом деле переживаете происходящее, независимо от своих планов.`;
+    }
+    if (index === 4 || index === 5) {
+        return `Безразличие и нейтральное отношение. ${color.name} цвет находится в резерве. Это означает, что ${psych} в данный момент не является для вас актуальной или вы сознательно откладываете реализацию этой потребности как нецелесообразную.`;
+    }
+    if (index === 6) {
+        return `Источник стресса и негативное отношение. Вы отвергаете ${cName} цвет, что указывает на подавление соответствующей потребности. Ситуация, связанная с ${psych}, вызывает напряжение, и вы вынуждены сдерживать эти стремления, так как их открытое проявление сейчас невыгодно.`;
+    }
+    if (index === 7) {
+        return `Стремление подавить потребность. ${color.name} цвет на последнем месте означает категорическое неприятие. Вы пытаетесь полностью вытеснить из своего сознания ${psych}${isMain ? ', хотя это одна из ваших базовых потребностей, что создаёт внутренний конфликт' : ''}. Данная сфера жизни заблокирована.`;
+    }
+    return '';
 }
 
 // ============ ЛОГИКА ТЕСТА ============
@@ -259,11 +296,11 @@ function buildResult(rounds) {
 
     // 5. Подробный разбор позиций
     const positions = main.map((id, index) => {
-        const color = COLOR_MAP[id];
         return {
             position: index + 1,
-            color: color,
-            meaning: POSITION_DESCRIPTIONS[index]
+            color: COLOR_MAP[id],
+            title: POSITION_DESCRIPTIONS[index],
+            detailedText: getDetailedPositionText(index, id)
         };
     });
 
@@ -423,26 +460,35 @@ function renderResult(result) {
     result.positions.forEach(pos => {
         const itemEl = document.createElement('div');
         itemEl.className = 'result-item';
+        itemEl.style.flexDirection = 'column';
+        itemEl.style.gap = '8px';
+
+        // Заголовок позиции (свотч + название)
+        const headerRow = document.createElement('div');
+        headerRow.style.cssText = 'display:flex; align-items:center; gap:12px; width:100%;';
 
         const sw = document.createElement('div');
         sw.className = 'result-swatch';
         sw.style.background = pos.color.hex;
+        sw.style.width = '32px';
+        sw.style.height = '32px';
 
-        const text = document.createElement('div');
-        const name = document.createElement('div');
-        name.className = 'result-name';
-        name.textContent = `${pos.position}. ${pos.color.name}`;
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'result-name';
+        titleDiv.style.fontSize = '15px';
+        titleDiv.textContent = `${pos.position}. ${pos.title} (${pos.color.name})`;
 
-        const meaning = document.createElement('div');
-        meaning.className = 'result-desc';
-        meaning.style.fontWeight = '500';
-        meaning.style.color = 'var(--text)';
-        meaning.textContent = pos.meaning;
+        headerRow.appendChild(sw);
+        headerRow.appendChild(titleDiv);
 
-        text.appendChild(name);
-        text.appendChild(meaning);
-        itemEl.appendChild(sw);
-        itemEl.appendChild(text);
+        // Подробный текст интерпретации
+        const descText = document.createElement('div');
+        descText.className = 'result-desc';
+        descText.style.cssText = 'font-size:14px; line-height:1.6; color:var(--text-muted); padding-left:44px;';
+        descText.textContent = pos.detailedText;
+
+        itemEl.appendChild(headerRow);
+        itemEl.appendChild(descText);
         resultContent.appendChild(itemEl);
     });
 

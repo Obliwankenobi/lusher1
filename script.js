@@ -23,100 +23,36 @@ const POSITION_DESCRIPTIONS = [
     'Стремление подавить потребность'
 ];
 
-const PAIR_INTERPRETATIONS = {
+// Полная таблица интерпретаций всех 28 пар цветов
+const FULL_PAIR_TABLE = {
     '1+2': 'Чувство удовлетворенности, спокойствия, стремление к спокойной обстановке, нежелание участвовать в конфликтах.',
     '1+3': 'Гармоничный баланс между потребностью в покое и активной деятельностью.',
     '1+4': 'Стремление к зависимости от среды, потребность в поддержке и понимании.',
-    '2+3': 'Автономность, самостоятельность в принятии решений, инициативность.',
-    '2+4': 'Стремление к самоутверждению через активную деятельность и достижение целей.',
-    '3+4': 'Направленность вовне, потребность активно действовать и добиваться успеха.',
     '1+5': 'Тонкая эмоциональность, романтичность, потребность в глубоких привязанностях.',
-    '1+0': 'Потребность в уединении и тишине, возможна усталость от общения.',
-    '2+7': 'Стремление к самоутверждению через независимость и контроль.',
-    '3+7': 'Сильная энергия, возможно, протестное поведение, готовность отстаивать позицию.',
-    '4+5': 'Мечтательность с оптимизмом, потребность в признании и переменах.',
-    '4+0': 'Стремление к оптимизму на фоне усталости, возможна скрытая тревога.',
-    '5+6': 'Потребность в утонченном комфорте и эстетике, тонкая чувствительность.',
-    '6+7': 'Стремление к комфорту и независимости одновременно.',
-    '0+7': 'Ярко выраженная потребность в уединении или протест, желание отгородиться.'
-};
-
-const INDIFFERENT_MEANINGS = {
-    '1+1': 'Нейтральное отношение к покою и привязанности. Потребность в отдыхе временно отложена.',
-    '1+2': 'Спокойствие и настойчивость сбалансированы, но не являются главными мотивами.',
-    '1+3': 'Гармония между покоем и активностью не является основной потребностью в данный момент.',
-    '1+4': 'Стремление к зависимости и поддержке не актуально или временно подавлено.',
-    '1+5': 'Эмоциональная тонкость и романтичность не являются ведущими мотивами.',
     '1+6': 'Потребность в комфорте и защите не является главной.',
     '1+7': 'Стремление к независимости и контролю не является ведущим.',
-    '1+0': 'Потребность в уединении не актуальна.',
-    '2+2': 'Настойчивость и самоутверждение временно не являются главными.',
-    '2+3': 'Автономность и инициативность не являются ведущими мотивами.',
-    '2+4': 'Стремление к самоутверждению через деятельность не актуально.',
+    '1+0': 'Потребность в уединении и тишине, возможна усталость от общения.',
+    '2+3': 'Автономность, самостоятельность в принятии решений, инициативность.',
+    '2+4': 'Стремление к самоутверждению через активную деятельность и достижение целей.',
     '2+5': 'Стремление к признанию через творчество не является главным.',
     '2+6': 'Уверенность и комфорт не являются ведущими потребностями.',
-    '2+7': 'Жёсткость и настойчивость не являются главными.',
+    '2+7': 'Стремление к самоутверждению через независимость и контроль.',
     '2+0': 'Сдержанная настойчивость не актуальна.',
-    '3+3': 'Активность и возбуждение временно не являются главными.',
-    '3+4': 'Стремление к успеху и деятельности не является ведущим мотивом.',
+    '3+4': 'Направленность вовне, потребность активно действовать и добиваться успеха.',
     '3+5': 'Энергичность с творческим началом не актуальна.',
     '3+6': 'Активность ради комфорта не является главной.',
-    '3+7': 'Готовность к протесту не является ведущей.',
+    '3+7': 'Сильная энергия, возможно, протестное поведение, готовность отстаивать позицию.',
     '3+0': 'Стремление действовать на фоне усталости не актуально.',
-    '4+4': 'Оптимизм и надежда временно не являются ведущими.',
-    '4+5': 'Мечтательность и оптимизм не являются главными.',
+    '4+5': 'Мечтательность с оптимизмом, потребность в признании и переменах.',
     '4+6': 'Желание перемен с потребностью в стабильности не актуально.',
     '4+7': 'Стремление к переменам с независимостью не является главным.',
     '4+0': 'Стремление к оптимизму на фоне усталости не актуально.',
-    '5+5': 'Творчество и мечтательность временно не являются главными.',
-    '5+6': 'Потребность в утончённом комфорте не актуальна.',
+    '5+6': 'Потребность в утонченном комфорте и эстетике, тонкая чувствительность.',
     '5+7': 'Стремление к признанию и независимости не является главным.',
     '5+0': 'Мечтательность с уходом от реальности не актуальна.',
-    '6+6': 'Потребность в комфорте и безопасности временно не является главной.',
-    '6+7': 'Стремление к комфорту и независимости не актуально.',
+    '6+7': 'Стремление к комфорту и независимости одновременно.',
     '6+0': 'Потребность в отдыхе и расслаблении не является ведущей.',
-    '7+7': 'Независимость и протест временно не являются главными.',
-    '7+0': 'Потребность в уединении или протест не актуальны.',
-    '0+0': 'Нейтральность и уединение не являются ведущими мотивами.'
-};
-
-const REJECTION_MEANINGS = {
-    '1+1': 'Отвергается покой и привязанность. Возможна неудовлетворённость отношениями или потребность в переменах.',
-    '1+2': 'Отвергается настойчивость и самоутверждение. Возможна неуверенность или усталость от борьбы.',
-    '1+3': 'Отвергается активность и возбуждение. Возможна усталость, переутомление, потребность в отдыхе.',
-    '1+4': 'Отвергается оптимизм и перемены. Возможна разочарованность, пессимизм.',
-    '1+5': 'Отвергается потребность в признании. Возможно, признание сейчас неактуально или вызывает напряжение.',
-    '1+6': 'Отвергается комфорт и безопасность. Возможна потребность в интенсивных переживаниях.',
-    '1+7': 'Отвергается независимость и протест. Возможно, есть потребность в компромиссе или контроле.',
-    '1+0': 'Отвергается нейтральность и уход. Возможна потребность в ярких впечатлениях и участии.',
-    '2+2': 'Отвергается настойчивость и самоутверждение. Возможна неуверенность или усталость от борьбы.',
-    '2+3': 'Отвергается автономность и инициативность. Возможно, вы чувствуете давление или нехватку самостоятельности.',
-    '2+4': 'Отвергается стремление к самоутверждению. Возможно, вы не хотите брать на себя ответственность.',
-    '2+5': 'Отвергается потребность в признании через творчество.',
-    '2+6': 'Отвергается уверенность и комфорт. Возможно, вы ищете перемен или напряжения.',
-    '2+7': 'Отвергается жёсткость и настойчивость. Возможно, вы устали от конфликтов.',
-    '2+0': 'Отвергается сдержанная настойчивость.',
-    '3+3': 'Отвергается активность и возбуждение. Возможна усталость, переутомление.',
-    '3+4': 'Отвергается стремление к успеху. Возможно, вы не хотите брать на себя инициативу.',
-    '3+5': 'Отвергается энергичность с творческим началом.',
-    '3+6': 'Отвергается активность ради комфорта.',
-    '3+7': 'Отвергается готовность к протесту. Возможно, вы ищете покоя.',
-    '3+0': 'Отвергается стремление действовать на фоне усталости.',
-    '4+4': 'Отвергается оптимизм и надежда. Возможна разочарованность.',
-    '4+5': 'Отвергается мечтательность и оптимизм.',
-    '4+6': 'Отвергается желание перемен с потребностью в стабильности.',
-    '4+7': 'Отвергается стремление к переменам с независимостью.',
-    '4+0': 'Отвергается стремление к оптимизму.',
-    '5+5': 'Отвергается творчество и мечтательность.',
-    '5+6': 'Отвергается потребность в утончённом комфорте.',
-    '5+7': 'Отвергается стремление к признанию и независимости.',
-    '5+0': 'Отвергается мечтательность с уходом от реальности.',
-    '6+6': 'Отвергается потребность в комфорте и безопасности.',
-    '6+7': 'Отвергается стремление к комфорту и независимости.',
-    '6+0': 'Отвергается потребность в отдыхе и расслаблении.',
-    '7+7': 'Отвергается независимость и протест.',
-    '7+0': 'Отвергается потребность в уединении или протест.',
-    '0+0': 'Отвергается нейтральность и уход.'
+    '7+0': 'Ярко выраженная потребность в уединении или протест, желание отгородиться.'
 };
 
 const ANXIETY_MEANINGS = {
@@ -261,37 +197,22 @@ function buildResult(rounds) {
     const second = rounds[1];
     const groups = getFunctionalGroups(main);
 
-    const positions = main.map((id, index) => {
-        const color = COLOR_MAP[id];
-        const posNum = index + 1;
-        let pairText = '';
-
-        if (index < 4) {
-            const pairId = [COLOR_MAP[main[index * 2]].num, COLOR_MAP[main[index * 2 + 1]].num].sort((a,b)=>a-b).join('+');
-            pairText = PAIR_INTERPRETATIONS[pairId] || 'Нейтральное сочетание.';
-        } else {
-            const pairIndex = index < 6 ? 4 : 6; 
-            const pairColors = [COLOR_MAP[main[pairIndex]], COLOR_MAP[main[pairIndex + 1]]];
-            const pairKey = [pairColors[0].num, pairColors[1].num].sort((a,b)=>a-b).join('+');
-            
-            if (posNum <= 6) {
-                pairText = INDIFFERENT_MEANINGS[pairKey] || 'Нейтральное сочетание.';
-            } else {
-                pairText = REJECTION_MEANINGS[pairKey] || 'Выраженное отвержение.';
-            }
-        }
-        
-        return {
-            position: posNum,
-            color: color,
-            meaning: POSITION_DESCRIPTIONS[index],
-            pairText: pairText
-        };
+    // 1. Расчет ОАН
+    const autogenicNorm = ['blue', 'green', 'red', 'yellow', 'violet', 'brown', 'gray', 'black'];
+    let anScore = 0;
+    main.forEach((id, index) => {
+        const normIndex = autogenicNorm.indexOf(id);
+        if (normIndex !== -1) anScore += Math.abs(normIndex - index);
     });
 
+    // 2. Расчет ВК
+    const greenPos = main.indexOf('green');
+    const redPos = main.indexOf('red');
+    const vkScore = (18 - greenPos - redPos) / (18 + greenPos + redPos);
+
+    // 3. Анализ тревог и компенсаций
     let anxietyScore = 0;
     let anxietySources = [];
-    
     main.forEach((id, index) => {
         const color = COLOR_MAP[id];
         if (color.type === 'main' && index >= 5) {
@@ -309,7 +230,6 @@ function buildResult(rounds) {
 
     let compScore = 0;
     let compSource = null;
-
     main.slice(0, 3).forEach((id, index) => {
         const color = COLOR_MAP[id];
         if (['gray', 'brown', 'black'].includes(id)) {
@@ -327,9 +247,36 @@ function buildResult(rounds) {
         }
     });
 
-    let conflictText = 'Основные потребности в целом удовлетворены.';
-    if (anxietyScore > 0) {
-        conflictText = `Обнаружена тревога (индекс: ${anxietyScore}). Основные потребности фрустрированы.`;
+    // 4. Оценка состояния
+    let stressText = 'Устойчивость к стрессу: Высокая.';
+    if (anScore > 20) stressText = 'Устойчивость к стрессу: Низкая (высокое нервно-психическое напряжение).';
+    else if (anScore > 10) stressText = 'Устойчивость к стрессу: Средняя (умеренное напряжение).';
+
+    let energyText = 'Энергетический баланс: Оптимальный.';
+    if (vkScore < 0.5) energyText = 'Энергетический баланс: Хроническое переутомление, истощение.';
+    else if (vkScore < 1) energyText = 'Энергетический баланс: Компенсируемое утомление.';
+    else if (vkScore > 1.5) energyText = 'Энергетический баланс: Перевозбуждение, активная мобилизация сил.';
+
+    // 5. Подробный разбор позиций
+    const positions = main.map((id, index) => {
+        const color = COLOR_MAP[id];
+        return {
+            position: index + 1,
+            color: color,
+            meaning: POSITION_DESCRIPTIONS[index]
+        };
+    });
+
+    // 6. Пары для отображения в таблице
+    const pairsList = [];
+    for (let i = 0; i < 8; i += 2) {
+        const pairIds = [main[i], main[i + 1]];
+        const pairKey = [COLOR_MAP[main[i]].num, COLOR_MAP[main[i + 1]].num].sort((a,b)=>a-b).join('+');
+        pairsList.push({
+            ids: pairIds,
+            key: pairKey,
+            text: FULL_PAIR_TABLE[pairKey] || 'Нейтральное сочетание.'
+        });
     }
 
     const matches = main.reduce((acc, id, i) => acc + (second[i] === id ? 1 : 0), 0);
@@ -339,24 +286,44 @@ function buildResult(rounds) {
         mainOrder: main,
         groups: groups,
         positions: positions,
-        conflictText: conflictText,
+        pairsList: pairsList,
         matches: matches,
         anxiety: { score: anxietyScore, sources: anxietySources },
-        compensation: { score: compScore, source: compSource }
+        compensation: { score: compScore, source: compSource },
+        metrics: {
+            anScore: anScore,
+            stressText: stressText,
+            vkScore: vkScore.toFixed(2),
+            energyText: energyText
+        }
     };
 }
 
 function renderResult(result) {
     resultContent.innerHTML = '';
 
-    if (result.conflictText) {
-        const warning = document.createElement('div');
-        warning.className = 'result-summary';
-        warning.style.borderLeft = '4px solid var(--primary)';
-        warning.textContent = result.conflictText;
-        resultContent.appendChild(warning);
-    }
+    // 1. Блок Количественных показателей
+    const metricsBox = document.createElement('div');
+    metricsBox.style.cssText = 'background:var(--bg); padding:16px; border-radius:12px; margin-bottom:24px; border-left:4px solid var(--primary);';
+    
+    const metricsTitle = document.createElement('div');
+    metricsTitle.style.cssText = 'font-weight:bold; margin-bottom:12px; color:var(--primary); font-size:16px;';
+    metricsTitle.textContent = 'Психофизиологические показатели';
+    
+    const anText = document.createElement('div');
+    anText.style.cssText = 'font-size:14px; margin-bottom:8px; color:var(--text);';
+    anText.innerHTML = `<strong>Отклонение от аутогенной нормы:</strong> ${result.metrics.anScore} <br><span style="color:var(--text-muted); font-size:13px;">${result.metrics.stressText}</span>`;
+    
+    const vkText = document.createElement('div');
+    vkText.style.cssText = 'font-size:14px; color:var(--text);';
+    vkText.innerHTML = `<strong>Вегетативный коэффициент:</strong> ${result.metrics.vkScore} <br><span style="color:var(--text-muted); font-size:13px;">${result.metrics.energyText}</span>`;
 
+    metricsBox.appendChild(metricsTitle);
+    metricsBox.appendChild(anText);
+    metricsBox.appendChild(vkText);
+    resultContent.appendChild(metricsBox);
+
+    // 2. Функциональные группы
     const groupsTitle = document.createElement('h2');
     groupsTitle.textContent = 'Функциональные группы';
     groupsTitle.style.cssText = 'font-size:18px;margin:24px 0 12px;color:var(--text);';
@@ -399,9 +366,9 @@ function renderResult(result) {
     });
     resultContent.appendChild(groupsContainer);
 
-    // Анализ тревог и компенсаций
+    // 3. Анализ тревог и компенсаций
     const analysisTitle = document.createElement('h2');
-    analysisTitle.textContent = 'Анализ тревог и компенсаций';
+    analysisTitle.textContent = 'Тревоги и компенсации';
     analysisTitle.style.cssText = 'font-size:18px;margin:24px 0 12px;color:var(--text);';
     resultContent.appendChild(analysisTitle);
 
@@ -447,9 +414,9 @@ function renderResult(result) {
         resultContent.appendChild(compBox);
     }
 
-    // Детальный разбор позиций
+    // 4. Детальный разбор позиций
     const positionsTitle = document.createElement('h2');
-    positionsTitle.textContent = 'Разбор позиций и пар';
+    positionsTitle.textContent = 'Разбор позиций';
     positionsTitle.style.cssText = 'font-size:18px;margin:24px 0 12px;color:var(--text);';
     resultContent.appendChild(positionsTitle);
 
@@ -472,20 +439,51 @@ function renderResult(result) {
         meaning.style.color = 'var(--text)';
         meaning.textContent = pos.meaning;
 
-        const pairDesc = document.createElement('div');
-        pairDesc.className = 'result-desc';
-        pairDesc.textContent = pos.pairText ? `В паре: ${pos.pairText}` : '';
-
         text.appendChild(name);
         text.appendChild(meaning);
-        if (pos.pairText) text.appendChild(pairDesc);
-
         itemEl.appendChild(sw);
         itemEl.appendChild(text);
         resultContent.appendChild(itemEl);
     });
 
-    // Устойчивость
+    // 5. Таблица всех пар (аккордеон)
+    const accordion = document.createElement('details');
+    accordion.className = 'pairs-accordion';
+    
+    const summary = document.createElement('summary');
+    summary.textContent = 'Точная таблица интерпретаций пар';
+    accordion.appendChild(summary);
+    
+    const pairsContent = document.createElement('div');
+    pairsContent.className = 'pairs-content';
+    
+    result.pairsList.forEach(pair => {
+        const entry = document.createElement('div');
+        entry.className = 'pair-entry';
+        
+        const swatches = document.createElement('div');
+        swatches.className = 'pair-swatches';
+        pair.ids.forEach(id => {
+            const sw = document.createElement('div');
+            sw.className = 'pair-swatch';
+            sw.style.background = COLOR_MAP[id].hex;
+            swatches.appendChild(sw);
+        });
+        
+        const textDiv = document.createElement('div');
+        textDiv.className = 'pair-text';
+        const colorNames = pair.ids.map(id => COLOR_MAP[id].name).join(' + ');
+        textDiv.innerHTML = `<strong>${colorNames}:</strong> ${pair.text}`;
+        
+        entry.appendChild(swatches);
+        entry.appendChild(textDiv);
+        pairsContent.appendChild(entry);
+    });
+    
+    accordion.appendChild(pairsContent);
+    resultContent.appendChild(accordion);
+
+    // 6. Устойчивость
     const stability = document.createElement('div');
     stability.className = 'result-summary';
     let stabilityText = 'Выбор был спонтанным — возможно, вы в состоянии перемен.';

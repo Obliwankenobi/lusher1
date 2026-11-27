@@ -484,3 +484,85 @@ p {
         text-align: center;
     }
 }
+/* Аккордеон для таблицы пар */
+.pairs-accordion {
+    margin-top: 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--card-bg);
+}
+
+.pairs-accordion summary {
+    padding: 16px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--bg);
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.pairs-accordion summary:hover {
+    background: var(--border);
+}
+
+.pairs-accordion summary::-webkit-details-marker {
+    display: none;
+}
+
+.pairs-accordion summary::after {
+    content: "▼";
+    font-size: 12px;
+    transition: transform 0.2s;
+    color: var(--text-hint);
+}
+
+.pairs-accordion[open] summary::after {
+    transform: rotate(180deg);
+}
+
+.pairs-content {
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.pair-entry {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.pair-entry:last-child {
+    border-bottom: none;
+}
+
+.pair-swatches {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.pair-swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+.pair-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.pair-text strong {
+    color: var(--text);
+}

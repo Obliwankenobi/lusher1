@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'luscher-v22'; // Обязательно подняли версию!
+const CACHE_VERSION = 'luscher-v20'; // Обязательно подняли версию!
 const APP_SHELL = [
     './',
     './index.html',

@@ -12,7 +12,8 @@ const COLORS = [
 
 const COLOR_MAP = Object.fromEntries(COLORS.map(c => [c.id, c]));
 
-const POSITION_MEANINGS = [
+// Уточнённые значения для каждой позиции (от 1 до 8)
+const POSITION_DESCRIPTIONS = [
     'Средство достижения цели (как вы действуете)',
     'Цель, к которой вы стремитесь',
     'Истинная ситуация (ваше реальное состояние)',
@@ -23,6 +24,7 @@ const POSITION_MEANINGS = [
     'Стремление подавить потребность'
 ];
 
+// Интерпретации для зон предпочтения (++)
 const PAIR_INTERPRETATIONS = {
     '1+2': 'Чувство удовлетворенности, спокойствия, стремление к спокойной обстановке, нежелание участвовать в конфликтах.',
     '1+3': 'Гармоничный баланс между потребностью в покое и активной деятельностью.',
@@ -39,6 +41,101 @@ const PAIR_INTERPRETATIONS = {
     '5+6': 'Потребность в утонченном комфорте и эстетике, тонкая чувствительность.',
     '6+7': 'Стремление к комфорту и независимости одновременно.',
     '0+7': 'Ярко выраженная потребность в уединении или протест, желание отгородиться.'
+};
+
+// Интерпретации для зон безразличия (==)
+const INDIFFERENT_MEANINGS = {
+    '1+1': 'Нейтральное отношение к покою и привязанности. Потребность в отдыхе временно отложена.',
+    '1+2': 'Спокойствие и настойчивость сбалансированы, но не являются главными мотивами.',
+    '1+3': 'Гармония между покоем и активностью не является основной потребностью в данный момент.',
+    '1+4': 'Стремление к зависимости и поддержке не актуально или временно подавлено.',
+    '1+5': 'Эмоциональная тонкость и романтичность не являются ведущими мотивами.',
+    '1+6': 'Потребность в комфорте и защите не является главной.',
+    '1+7': 'Стремление к независимости и контролю не является ведущим.',
+    '1+0': 'Потребность в уединении не актуальна.',
+    '2+2': 'Настойчивость и самоутверждение временно не являются главными.',
+    '2+3': 'Автономность и инициативность не являются ведущими мотивами.',
+    '2+4': 'Стремление к самоутверждению через деятельность не актуально.',
+    '2+5': 'Стремление к признанию через творчество не является главным.',
+    '2+6': 'Уверенность и комфорт не являются ведущими потребностями.',
+    '2+7': 'Жёсткость и настойчивость не являются главными.',
+    '2+0': 'Сдержанная настойчивость не актуальна.',
+    '3+3': 'Активность и возбуждение временно не являются главными.',
+    '3+4': 'Стремление к успеху и деятельности не является ведущим мотивом.',
+    '3+5': 'Энергичность с творческим началом не актуальна.',
+    '3+6': 'Активность ради комфорта не является главной.',
+    '3+7': 'Готовность к протесту не является ведущей.',
+    '3+0': 'Стремление действовать на фоне усталости не актуально.',
+    '4+4': 'Оптимизм и надежда временно не являются ведущими.',
+    '4+5': 'Мечтательность и оптимизм не являются главными.',
+    '4+6': 'Желание перемен с потребностью в стабильности не актуально.',
+    '4+7': 'Стремление к переменам с независимостью не является главным.',
+    '4+0': 'Стремление к оптимизму на фоне усталости не актуально.',
+    '5+5': 'Творчество и мечтательность временно не являются главными.',
+    '5+6': 'Потребность в утончённом комфорте не актуальна.',
+    '5+7': 'Стремление к признанию и независимости не является главным.',
+    '5+0': 'Мечтательность с уходом от реальности не актуальна.',
+    '6+6': 'Потребность в комфорте и безопасности временно не является главной.',
+    '6+7': 'Стремление к комфорту и независимости не актуально.',
+    '6+0': 'Потребность в отдыхе и расслаблении не является ведущей.',
+    '7+7': 'Независимость и протест временно не являются главными.',
+    '7+0': 'Потребность в уединении или протест не актуальны.',
+    '0+0': 'Нейтральность и уединение не являются ведущими мотивами.'
+};
+
+// Интерпретации для зон отвержения (--)
+const REJECTION_MEANINGS = {
+    '1+1': 'Отвергается покой и привязанность. Возможна неудовлетворённость отношениями или потребность в переменах.',
+    '1+2': 'Отвергается настойчивость и самоутверждение. Возможна неуверенность или усталость от борьбы.',
+    '1+3': 'Отвергается активность и возбуждение. Возможна усталость, переутомление, потребность в отдыхе.',
+    '1+4': 'Отвергается оптимизм и перемены. Возможна разочарованность, пессимизм.',
+    '1+5': 'Отвергается потребность в признании. Возможно, признание сейчас неактуально или вызывает напряжение.',
+    '1+6': 'Отвергается комфорт и безопасность. Возможна потребность в интенсивных переживаниях.',
+    '1+7': 'Отвергается независимость и протест. Возможно, есть потребность в компромиссе или контроле.',
+    '1+0': 'Отвергается нейтральность и уход. Возможна потребность в ярких впечатлениях и участии.',
+    '2+2': 'Отвергается настойчивость и самоутверждение. Возможна неуверенность или усталость от борьбы.',
+    '2+3': 'Отвергается автономность и инициативность. Возможно, вы чувствуете давление или нехватку самостоятельности.',
+    '2+4': 'Отвергается стремление к самоутверждению. Возможно, вы не хотите брать на себя ответственность.',
+    '2+5': 'Отвергается потребность в признании через творчество.',
+    '2+6': 'Отвергается уверенность и комфорт. Возможно, вы ищете перемен или напряжения.',
+    '2+7': 'Отвергается жёсткость и настойчивость. Возможно, вы устали от конфликтов.',
+    '2+0': 'Отвергается сдержанная настойчивость.',
+    '3+3': 'Отвергается активность и возбуждение. Возможна усталость, переутомление.',
+    '3+4': 'Отвергается стремление к успеху. Возможно, вы не хотите брать на себя инициативу.',
+    '3+5': 'Отвергается энергичность с творческим началом.',
+    '3+6': 'Отвергается активность ради комфорта.',
+    '3+7': 'Отвергается готовность к протесту. Возможно, вы ищете покоя.',
+    '3+0': 'Отвергается стремление действовать на фоне усталости.',
+    '4+4': 'Отвергается оптимизм и надежда. Возможна разочарованность.',
+    '4+5': 'Отвергается мечтательность и оптимизм.',
+    '4+6': 'Отвергается желание перемен с потребностью в стабильности.',
+    '4+7': 'Отвергается стремление к переменам с независимостью.',
+    '4+0': 'Отвергается стремление к оптимизму.',
+    '5+5': 'Отвергается творчество и мечтательность.',
+    '5+6': 'Отвергается потребность в утончённом комфорте.',
+    '5+7': 'Отвергается стремление к признанию и независимости.',
+    '5+0': 'Отвергается мечтательность с уходом от реальности.',
+    '6+6': 'Отвергается потребность в комфорте и безопасности.',
+    '6+7': 'Отвергается стремление к комфорту и независимости.',
+    '6+0': 'Отвергается потребность в отдыхе и расслаблении.',
+    '7+7': 'Отвергается независимость и протест.',
+    '7+0': 'Отвергается потребность в уединении или протест.',
+    '0+0': 'Отвергается нейтральность и уход.'
+};
+
+// Значения цветов для анализа тревог
+const ANXIETY_MEANINGS = {
+    'blue': 'Неудовлетворенность эмоциональными отношениями, потребность в покое не удовлетворена.',
+    'green': 'Ощущение препятствия к самореализации, нехватка волевого усилия или усталость от борьбы.',
+    'red': 'Истощение сил, переутомление, неудовлетворенность активностью.',
+    'yellow': 'Разочарование, ощущение пустоты, нехватка общения и положительных эмоций.'
+};
+
+// Значения цветов для анализа компенсаций
+const COMPENSATION_MEANINGS = {
+    'gray': 'Компенсация через уход от реальности, пассивность, желание отгородиться от проблем.',
+    'brown': 'Компенсация через поиск комфорта, безопасности, физического расслабления.',
+    'black': 'Компенсация через протест, негативизм, отказ от взаимодействия с миром.'
 };
 
 // ============ СОСТОЯНИЕ ============
@@ -63,7 +160,7 @@ const progressFill     = document.getElementById('progress-fill');
 const resultContent    = document.getElementById('result-content');
 const historyContent   = document.getElementById('history-content');
 
-// ============ НАВИГАЦИЯ ============
+// ============ НАВИГАЦИЯ И УТИЛИТЫ ============
 function showScreen(name) {
     Object.values(screens).forEach(s => s.classList.remove('active'));
     if (screens[name]) {
@@ -79,6 +176,15 @@ function shuffle(arr) {
         [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
+}
+
+function getFunctionalGroups(order) {
+    return {
+        '++': [order[0], order[1]],
+        'xx': [order[2], order[3]],
+        '==': [order[4], order[5]],
+        '--': [order[6], order[7]]
+    };
 }
 
 // ============ ЛОГИКА ТЕСТА ============
@@ -157,38 +263,88 @@ function selectColor(id) {
 }
 
 // ============ АНАЛИЗ РЕЗУЛЬТАТОВ ============
-function getFunctionalGroups(order) {
-    return {
-        '++': [order[0], order[1]],
-        'xx': [order[2], order[3]],
-        '==': [order[4], order[5]],
-        '--': [order[6], order[7]]
-    };
-}
-
 function buildResult(rounds) {
     const main = rounds[0];
     const second = rounds[1];
     const groups = getFunctionalGroups(main);
 
+    // Детальный разбор позиций и пар
     const positions = main.map((id, index) => {
         const color = COLOR_MAP[id];
-        const pairId = index < 4 
-            ? [COLOR_MAP[main[index * 2]].num, COLOR_MAP[main[index * 2 + 1]].num].sort((a,b)=>a-b).join('+')
-            : null;
+        const posNum = index + 1;
+        let pairText = '';
+
+        if (index < 4) {
+            // Для первых 4 позиций (зоны ++ и xx) используем PAIR_INTERPRETATIONS
+            const pairId = [COLOR_MAP[main[index * 2]].num, COLOR_MAP[main[index * 2 + 1]].num].sort((a,b)=>a-b).join('+');
+            pairText = PAIR_INTERPRETATIONS[pairId] || 'Нейтральное сочетание.';
+        } else {
+            // Для зон безразличия (==) и отвержения (--)
+            const pairIndex = index % 2 === 0 ? index : index + 1; // Индекс первого цвета в паре (4 или 6)
+            const pairColors = [COLOR_MAP[main[pairIndex]], COLOR_MAP[main[pairIndex + 1]]];
+            const pairKey = [pairColors[0].num, pairColors[1].num].sort((a,b)=>a-b).join('+');
+            
+            if (posNum <= 6) {
+                pairText = INDIFFERENT_MEANINGS[pairKey] || 'Нейтральное сочетание.';
+            } else {
+                pairText = REJECTION_MEANINGS[pairKey] || 'Выраженное отвержение.';
+            }
+        }
         
         return {
-            position: index + 1,
+            position: posNum,
             color: color,
-            meaning: POSITION_MEANINGS[index],
-            pairText: pairId ? (PAIR_INTERPRETATIONS[pairId] || 'Нейтральное сочетание.') : null
+            meaning: POSITION_DESCRIPTIONS[index],
+            pairText: pairText
         };
     });
 
-    const mainColorsInRejection = main.slice(5).filter(id => COLOR_MAP[id].type === 'main');
-    const conflictText = mainColorsInRejection.length > 0
-        ? `Внимание: основные цвета (${mainColorsInRejection.map(id => COLOR_MAP[id].name).join(', ')}) находятся в зоне отвержения. Это может указывать на неудовлетворенность базовых потребностей и внутренний конфликт.`
-        : 'Основные потребности в целом удовлетворены.';
+    // --- Анализ тревог и компенсаций ---
+    let anxietyScore = 0;
+    let anxietySources = [];
+    
+    // Проверка тревог (основные цвета на 6, 7, 8 позициях)
+    main.forEach((id, index) => {
+        const color = COLOR_MAP[id];
+        if (color.type === 'main' && index >= 5) {
+            const pos = index + 1; // 6, 7, 8
+            const marks = pos === 6 ? 1 : pos === 7 ? 2 : 3;
+            anxietyScore += marks;
+            anxietySources.push({
+                name: color.name,
+                pos: pos,
+                marks: '!'.repeat(marks),
+                meaning: ANXIETY_MEANINGS[id]
+            });
+        }
+    });
+
+    let compScore = 0;
+    let compSource = null;
+
+    // Проверка компенсаций (дополнительные цвета 0, 6, 7 на 1, 2, 3 позициях)
+    main.slice(0, 3).forEach((id, index) => {
+        const color = COLOR_MAP[id];
+        if (['gray', 'brown', 'black'].includes(id)) {
+            const pos = index + 1; // 1, 2, 3
+            const marks = pos === 3 ? 1 : pos === 2 ? 2 : 3;
+            if (marks > compScore) {
+                compScore = marks;
+                compSource = {
+                    name: color.name,
+                    pos: pos,
+                    marks: '!'.repeat(marks),
+                    meaning: COMPENSATION_MEANINGS[id]
+                };
+            }
+        }
+    });
+    // -----------------------------------
+
+    let conflictText = 'Основные потребности в целом удовлетворены.';
+    if (anxietyScore > 0) {
+        conflictText = `Обнаружена тревога (индекс: ${anxietyScore}). Основные потребности фрустрированы.`;
+    }
 
     const matches = main.reduce((acc, id, i) => acc + (second[i] === id ? 1 : 0), 0);
 
@@ -198,14 +354,16 @@ function buildResult(rounds) {
         groups: groups,
         positions: positions,
         conflictText: conflictText,
-        matches: matches
+        matches: matches,
+        anxiety: { score: anxietyScore, sources: anxietySources },
+        compensation: { score: compScore, source: compSource }
     };
 }
 
 function renderResult(result) {
     resultContent.innerHTML = '';
 
-    // Предупреждение о конфликте
+    // 1. Предупреждение о конфликте
     if (result.conflictText) {
         const warning = document.createElement('div');
         warning.className = 'result-summary';
@@ -214,7 +372,7 @@ function renderResult(result) {
         resultContent.appendChild(warning);
     }
 
-    // Функциональные группы
+    // 2. Функциональные группы
     const groupsTitle = document.createElement('h2');
     groupsTitle.textContent = 'Функциональные группы';
     groupsTitle.style.cssText = 'font-size:18px;margin:24px 0 12px;color:var(--text);';
@@ -257,7 +415,57 @@ function renderResult(result) {
     });
     resultContent.appendChild(groupsContainer);
 
-    // Детальный разбор позиций
+    // 3. Блок: Анализ тревог и компенсаций
+    const analysisTitle = document.createElement('h2');
+    analysisTitle.textContent = 'Анализ тревог и компенсаций';
+    analysisTitle.style.cssText = 'font-size:18px;margin:24px 0 12px;color:var(--text);';
+    resultContent.appendChild(analysisTitle);
+
+    // Тревога
+    const anxietyBox = document.createElement('div');
+    anxietyBox.style.cssText = 'background:var(--bg); padding:16px; border-radius:12px; margin-bottom:12px; border-left:4px solid var(--danger);';
+    
+    if (result.anxiety.score > 0) {
+        const title = document.createElement('div');
+        title.style.cssText = 'font-weight:bold; margin-bottom:8px; color:var(--danger);';
+        title.textContent = `Тревога: ${result.anxiety.score} балл(ов)`;
+        
+        const list = document.createElement('ul');
+        list.style.cssText = 'padding-left:20px; margin:0; font-size:14px; color:var(--text-muted);';
+        
+        result.anxiety.sources.forEach(s => {
+            const li = document.createElement('li');
+            li.style.marginBottom = '8px';
+            li.innerHTML = `<strong>${s.name}</strong> на ${s.pos}-й позиции <span style="color:var(--danger);font-weight:bold;">${s.marks}</span><br><span style="font-size:13px;">${s.meaning}</span>`;
+            list.appendChild(li);
+        });
+        anxietyBox.appendChild(title);
+        anxietyBox.appendChild(list);
+    } else {
+        anxietyBox.innerHTML = '<div style="color:var(--text-muted);font-size:14px;">Явных признаков тревоги не обнаружено. Все основные цвета находятся в благоприятной зоне.</div>';
+    }
+    resultContent.appendChild(anxietyBox);
+
+    // Компенсация
+    if (result.compensation.score > 0) {
+        const compBox = document.createElement('div');
+        compBox.style.cssText = 'background:var(--bg); padding:16px; border-radius:12px; border-left:4px solid var(--primary);';
+        
+        const title = document.createElement('div');
+        title.style.cssText = 'font-weight:bold; margin-bottom:8px; color:var(--primary);';
+        title.textContent = `Компенсация: ${result.compensation.score} балл(ов)`;
+        
+        const desc = document.createElement('div');
+        desc.style.cssText = 'font-size:14px; color:var(--text-muted);';
+        const c = result.compensation.source;
+        desc.innerHTML = `<strong>${c.name}</strong> на ${c.pos}-й позиции <span style="color:var(--primary);font-weight:bold;">${c.marks}</span><br><span style="font-size:13px;">${c.meaning}</span>`;
+        
+        compBox.appendChild(title);
+        compBox.appendChild(desc);
+        resultContent.appendChild(compBox);
+    }
+
+    // 4. Детальный разбор позиций
     const positionsTitle = document.createElement('h2');
     positionsTitle.textContent = 'Разбор позиций и пар';
     positionsTitle.style.cssText = 'font-size:18px;margin:24px 0 12px;color:var(--text);';
@@ -295,7 +503,7 @@ function renderResult(result) {
         resultContent.appendChild(itemEl);
     });
 
-    // Устойчивость
+    // 5. Устойчивость
     const stability = document.createElement('div');
     stability.className = 'result-summary';
     const stabilityText = result.matches >= 6

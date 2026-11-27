@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'luscher-v13';
+const CACHE_VERSION = 'luscher-v14';
 const APP_SHELL = [
     './',
     './index.html',

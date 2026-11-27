@@ -12,7 +12,6 @@ const COLORS = [
 
 const COLOR_MAP = Object.fromEntries(COLORS.map(c => [c.id, c]));
 
-// Уточнённые значения для каждой позиции (от 1 до 8)
 const POSITION_DESCRIPTIONS = [
     'Средство достижения цели (как вы действуете)',
     'Цель, к которой вы стремитесь',
@@ -24,7 +23,6 @@ const POSITION_DESCRIPTIONS = [
     'Стремление подавить потребность'
 ];
 
-// Интерпретации для зон предпочтения (++)
 const PAIR_INTERPRETATIONS = {
     '1+2': 'Чувство удовлетворенности, спокойствия, стремление к спокойной обстановке, нежелание участвовать в конфликтах.',
     '1+3': 'Гармоничный баланс между потребностью в покое и активной деятельностью.',
@@ -43,7 +41,6 @@ const PAIR_INTERPRETATIONS = {
     '0+7': 'Ярко выраженная потребность в уединении или протест, желание отгородиться.'
 };
 
-// Интерпретации для зон безразличия (==)
 const INDIFFERENT_MEANINGS = {
     '1+1': 'Нейтральное отношение к покою и привязанности. Потребность в отдыхе временно отложена.',
     '1+2': 'Спокойствие и настойчивость сбалансированы, но не являются главными мотивами.',
@@ -83,7 +80,6 @@ const INDIFFERENT_MEANINGS = {
     '0+0': 'Нейтральность и уединение не являются ведущими мотивами.'
 };
 
-// Интерпретации для зон отвержения (--)
 const REJECTION_MEANINGS = {
     '1+1': 'Отвергается покой и привязанность. Возможна неудовлетворённость отношениями или потребность в переменах.',
     '1+2': 'Отвергается настойчивость и самоутверждение. Возможна неуверенность или усталость от борьбы.',
@@ -123,7 +119,6 @@ const REJECTION_MEANINGS = {
     '0+0': 'Отвергается нейтральность и уход.'
 };
 
-// Значения цветов для анализа тревог
 const ANXIETY_MEANINGS = {
     'blue': 'Неудовлетворенность эмоциональными отношениями, потребность в покое не удовлетворена.',
     'green': 'Ощущение препятствия к самореализации, нехватка волевого усилия или усталость от борьбы.',
@@ -131,7 +126,6 @@ const ANXIETY_MEANINGS = {
     'yellow': 'Разочарование, ощущение пустоты, нехватка общения и положительных эмоций.'
 };
 
-// Значения цветов для анализа компенсаций
 const COMPENSATION_MEANINGS = {
     'gray': 'Компенсация через уход от реальности, пассивность, желание отгородиться от проблем.',
     'brown': 'Компенсация через поиск комфорта, безопасности, физического расслабления.',
@@ -216,7 +210,6 @@ function render() {
 
     colorsGrid.innerHTML = '';
     colorPool.forEach(color => {
-        // Если цвет уже выбран — не показываем его (исчезает)
         if (currentOrder.includes(color.id)) return;
 
         const tile = document.createElement('div');
@@ -268,20 +261,15 @@ function buildResult(rounds) {
     const second = rounds[1];
     const groups = getFunctionalGroups(main);
 
-    // Детальный разбор позиций и пар
     const positions = main.map((id, index) => {
         const color = COLOR_MAP[id];
         const posNum = index + 1;
         let pairText = '';
 
         if (index < 4) {
-            // Для первых 4 позиций (зоны ++ и xx) используем PAIR_INTERPRETATIONS
             const pairId = [COLOR_MAP[main[index * 2]].num, COLOR_MAP[main[index * 2 + 1]].num].sort((a,b)=>a-b).join('+');
             pairText = PAIR_INTERPRETATIONS[pairId] || 'Нейтральное сочетание.';
         } else {
-                   } else {
-            // Для зон безразличия (==) и отвержения (--)
-            // Если индекс 4 или 5, берем пару 4 и 5. Если 6 или 7, берем пару 6 и 7.
             const pairIndex = index < 6 ? 4 : 6; 
             const pairColors = [COLOR_MAP[main[pairIndex]], COLOR_MAP[main[pairIndex + 1]]];
             const pairKey = [pairColors[0].num, pairColors[1].num].sort((a,b)=>a-b).join('+');
@@ -301,15 +289,13 @@ function buildResult(rounds) {
         };
     });
 
-    // --- Анализ тревог и компенсаций ---
     let anxietyScore = 0;
     let anxietySources = [];
     
-    // Проверка тревог (основные цвета на 6, 7, 8 позициях)
     main.forEach((id, index) => {
         const color = COLOR_MAP[id];
         if (color.type === 'main' && index >= 5) {
-            const pos = index + 1; // 6, 7, 8
+            const pos = index + 1;
             const marks = pos === 6 ? 1 : pos === 7 ? 2 : 3;
             anxietyScore += marks;
             anxietySources.push({
@@ -324,11 +310,10 @@ function buildResult(rounds) {
     let compScore = 0;
     let compSource = null;
 
-    // Проверка компенсаций (дополнительные цвета 0, 6, 7 на 1, 2, 3 позициях)
     main.slice(0, 3).forEach((id, index) => {
         const color = COLOR_MAP[id];
         if (['gray', 'brown', 'black'].includes(id)) {
-            const pos = index + 1; // 1, 2, 3
+            const pos = index + 1;
             const marks = pos === 3 ? 1 : pos === 2 ? 2 : 3;
             if (marks > compScore) {
                 compScore = marks;
@@ -341,7 +326,6 @@ function buildResult(rounds) {
             }
         }
     });
-    // -----------------------------------
 
     let conflictText = 'Основные потребности в целом удовлетворены.';
     if (anxietyScore > 0) {
@@ -365,7 +349,6 @@ function buildResult(rounds) {
 function renderResult(result) {
     resultContent.innerHTML = '';
 
-    // 1. Предупреждение о конфликте
     if (result.conflictText) {
         const warning = document.createElement('div');
         warning.className = 'result-summary';
@@ -374,7 +357,6 @@ function renderResult(result) {
         resultContent.appendChild(warning);
     }
 
-    // 2. Функциональные группы
     const groupsTitle = document.createElement('h2');
     groupsTitle.textContent = 'Функциональные группы';
     groupsTitle.style.cssText = 'font-size:18px;margin:24px 0 12px;color:var(--text);';
@@ -417,13 +399,12 @@ function renderResult(result) {
     });
     resultContent.appendChild(groupsContainer);
 
-    // 3. Блок: Анализ тревог и компенсаций
+    // Анализ тревог и компенсаций
     const analysisTitle = document.createElement('h2');
     analysisTitle.textContent = 'Анализ тревог и компенсаций';
     analysisTitle.style.cssText = 'font-size:18px;margin:24px 0 12px;color:var(--text);';
     resultContent.appendChild(analysisTitle);
 
-    // Тревога
     const anxietyBox = document.createElement('div');
     anxietyBox.style.cssText = 'background:var(--bg); padding:16px; border-radius:12px; margin-bottom:12px; border-left:4px solid var(--danger);';
     
@@ -448,7 +429,6 @@ function renderResult(result) {
     }
     resultContent.appendChild(anxietyBox);
 
-    // Компенсация
     if (result.compensation.score > 0) {
         const compBox = document.createElement('div');
         compBox.style.cssText = 'background:var(--bg); padding:16px; border-radius:12px; border-left:4px solid var(--primary);';
@@ -467,7 +447,7 @@ function renderResult(result) {
         resultContent.appendChild(compBox);
     }
 
-    // 4. Детальный разбор позиций
+    // Детальный разбор позиций
     const positionsTitle = document.createElement('h2');
     positionsTitle.textContent = 'Разбор позиций и пар';
     positionsTitle.style.cssText = 'font-size:18px;margin:24px 0 12px;color:var(--text);';
@@ -505,14 +485,15 @@ function renderResult(result) {
         resultContent.appendChild(itemEl);
     });
 
-    // 5. Устойчивость
+    // Устойчивость
     const stability = document.createElement('div');
     stability.className = 'result-summary';
-    const stabilityText = result.matches >= 6
-        ? 'Высокая устойчивость предпочтений.'
-        : result.matches >= 3
-            ? 'Умеренная устойчивость.'
-            : 'Выбор был спонтанным — возможно, вы в состоянии перемен.';
+    let stabilityText = 'Выбор был спонтанным — возможно, вы в состоянии перемен.';
+    if (result.matches >= 6) {
+        stabilityText = 'Высокая устойчивость предпочтений.';
+    } else if (result.matches >= 3) {
+        stabilityText = 'Умеренная устойчивость.';
+    }
     stability.innerHTML = `<strong>Совпадение двух проходов:</strong> ${result.matches} из 8. ${stabilityText}`;
     resultContent.appendChild(stability);
 }
@@ -619,7 +600,6 @@ document.getElementById('clear-history-btn').addEventListener('click', () => {
     }
 });
 
-// Экспорт в PDF
 document.getElementById('pdf-btn').addEventListener('click', () => {
     const now = new Date().toLocaleString('ru-RU', {
         day: '2-digit', month: '2-digit', year: 'numeric',
@@ -660,7 +640,6 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Тема
 if (window.matchMedia) {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const updateTheme = () => {

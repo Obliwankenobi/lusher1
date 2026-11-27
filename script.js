@@ -279,8 +279,10 @@ function buildResult(rounds) {
             const pairId = [COLOR_MAP[main[index * 2]].num, COLOR_MAP[main[index * 2 + 1]].num].sort((a,b)=>a-b).join('+');
             pairText = PAIR_INTERPRETATIONS[pairId] || 'Нейтральное сочетание.';
         } else {
+                   } else {
             // Для зон безразличия (==) и отвержения (--)
-            const pairIndex = index % 2 === 0 ? index : index + 1; // Индекс первого цвета в паре (4 или 6)
+            // Если индекс 4 или 5, берем пару 4 и 5. Если 6 или 7, берем пару 6 и 7.
+            const pairIndex = index < 6 ? 4 : 6; 
             const pairColors = [COLOR_MAP[main[pairIndex]], COLOR_MAP[main[pairIndex + 1]]];
             const pairKey = [pairColors[0].num, pairColors[1].num].sort((a,b)=>a-b).join('+');
             
